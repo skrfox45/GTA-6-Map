@@ -1,0 +1,9 @@
+{
+  "name": "GTA VI Leonida Gruppenkarte",
+  "short_name": "Leonida Map",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07181c",
+  "theme_color": "#07181c",
+  "icons": []
+}

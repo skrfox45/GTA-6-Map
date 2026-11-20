@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07181c">
+<link rel="manifest" href="manifest.webmanifest">
+<title>GTA VI • Leonida Gruppenkarte</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#07181c;color:#fff;overflow:hidden}
+button,input,textarea,select{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;background:#17333b;color:#fff}button:active{transform:scale(.98)}.primary{background:#f3c64e;color:#111;font-weight:800}.danger{background:#6e2830}
+#app{height:100%;display:flex;flex-direction:column}header{height:60px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:#050f12;border-bottom:1px solid #234047;z-index:5}.logo{font-weight:900}.sub{font-size:11px;opacity:.6}
+.tools{margin-left:auto;display:flex;gap:6px}.small{font-size:12px;padding:7px 9px}
+#main{flex:1;min-height:0;display:flex}.mapWrap{position:relative;flex:1;overflow:auto;background:#061317;touch-action:none}.map{position:relative;width:min(100vw,1000px);min-width:560px;aspect-ratio:2805/3840;margin:auto;transform-origin:0 0;will-change:transform}.map img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
+#pins{position:absolute;inset:0}.pin{position:absolute;transform:translate(-50%,-100%);z-index:3}.pinDot{width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 10px #0009}.pinDot i{display:block;width:8px;height:8px;background:#fff;border-radius:50%;margin:7px}.pinLabel{position:absolute;left:18px;top:-5px;background:#08171bd9;border:1px solid #fff3;border-radius:7px;padding:4px 7px;white-space:nowrap;font-size:11px}
+#zoom{position:fixed;left:12px;top:72px;z-index:8;display:flex;gap:4px;align-items:center;background:#061317e8;padding:5px;border:1px solid #fff2;border-radius:12px}.zbtn{width:38px;height:38px;padding:0;font-size:21px}.ztext{min-width:48px;text-align:center;font-size:11px;font-weight:800}
+#hint{position:absolute;left:12px;bottom:12px;background:#061317dd;border:1px solid #fff2;padding:8px 10px;border-radius:10px;font-size:11px;z-index:4}
+.panel{width:330px;background:#0b2026;border-left:1px solid #234047;display:flex;flex-direction:column}.panelTop{padding:10px;border-bottom:1px solid #234047}.search{width:100%;background:#07171b;color:#fff;border:1px solid #31555d;border-radius:9px;padding:9px}.legend{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.tag{font-size:10px;border:1px solid #31555d;border-radius:999px;padding:3px 6px}
+#list{overflow:auto;padding:10px;flex:1}.card{background:#102b32;border:1px solid #23474f;border-radius:12px;padding:10px;margin-bottom:8px}.card strong{display:block}.meta{font-size:11px;opacity:.65;margin-top:3px}.note{font-size:12px;margin-top:6px;opacity:.85}.actions{display:flex;gap:5px;margin-top:8px}.actions button{font-size:11px;padding:6px 8px}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.open{display:flex}.box{width:min(460px,100%);background:#0b2026;border:1px solid #31555d;border-radius:16px;padding:16px}.box h2{margin:0 0 12px}.field{margin:9px 0}.field label{display:block;font-size:11px;opacity:.7;margin-bottom:4px}.field input,.field textarea,.field select{width:100%;background:#07171b;color:#fff;border:1px solid #31555d;border-radius:9px;padding:9px}.field textarea{min-height:85px}.modalActions{display:flex;gap:8px;justify-content:flex-end;margin-top:13px}
+@media(max-width:800px){.panel{position:absolute;right:0;top:60px;bottom:0;width:min(340px,90vw);transform:translateX(100%);transition:.2s;z-index:9}.panel.open{transform:translateX(0)}.sub{display:none}.tools .desktop{display:none}.pinLabel{display:none}.map{min-width:520px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><div><div class="logo">GTA VI • LEONIDA</div><div class="sub">Private Gruppenkarte</div></div>
+<div class="tools"><button class="small" onclick="togglePanel()">📍 Pins</button><button class="small desktop" onclick="exportPins()">⬇️ Export</button><button class="small desktop" onclick="document.querySelector('#importFile').click()">⬆️ Import</button><button class="small primary" onclick="sharePins()">💬 WhatsApp</button><input id="importFile" type="file" accept=".json" hidden onchange="importPins(event)"></div></header>
+<div id="main"><div class="mapWrap" id="mapWrap">
+<div class="map" id="map"><img src="https://www.rockstargames.com/VI/_next/static/media/Leonida_Map_Poster.08ir77j-.26ny.jpg?akim=1&amp;imdensity=1&amp;imwidth=3840" alt="Official GTA VI Leonida map"><div id="pins"></div></div>
+<div id="zoom"><button class="zbtn" onclick="zoomOut()">−</button><span class="ztext" id="zoomText">100%</span><button class="zbtn" onclick="zoomIn()">+</button><button class="zbtn" onclick="resetZoom()">⟳</button></div>
+<div id="hint">📍 Karte antippen = Pin setzen</div>
+</div><aside class="panel" id="panel"><div class="panelTop"><input class="search" id="search" placeholder="Pins suchen…" oninput="render()"><div class="legend"><span class="tag">🔴 Treffpunkt</span><span class="tag">🟢 Geheim</span><span class="tag">🔵 Mission</span><span class="tag">🟣 Shop</span><span class="tag">🟠 Rennen</span></div></div><div id="list"></div></aside></div>
+</div>
+<div class="modal" id="modal"><div class="box"><h2 id="modalTitle">Pin setzen</h2><div class="field"><label>Name</label><input id="name" autocomplete="off" placeholder="z. B. Unser Treffpunkt"></div><div class="field"><label>Kategorie</label><select id="cat"><option>Treffpunkt</option><option>Geheim</option><option>Mission</option><option>Shop</option><option>Rennen</option><option>Sonstiges</option></select></div><div class="field"><label>Kommentar / Notiz</label><textarea id="note" placeholder="Was sollen die anderen wissen?"></textarea></div><div class="modalActions"><button onclick="closeModal()">Abbrechen</button><button class="primary" onclick="savePin()">Speichern</button></div></div></div>
+<script>
+const KEY="gta6_leonida_group_v1";
+const colors={Treffpunkt:"#e64b4b",Geheim:"#35c96f",Mission:"#4aa3ff",Shop:"#b36cff",Rennen:"#ff9d3d",Sonstiges:"#f3c64e"};
+let pins=loadPins(), pending=null, editId=null, zoom=1;
+function loadPins(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch{return[]}}
+function saveLocal(){localStorage.setItem(KEY,JSON.stringify(pins))}
+function openModal(){modal.classList.add("open");modalTitle.textContent=editId?"Pin bearbeiten":"Pin setzen";if(editId){let p=pins.find(x=>x.id===editId);name.value=p.name;cat.value=p.cat;note.value=p.note||""}else{name.value="";cat.value="Treffpunkt";note.value=""}} 
+function closeModal(){modal.classList.remove("open");pending=null;editId=null}
+map.onclick=e=>{if(e.target.closest(".pin"))return;const r=map.getBoundingClientRect();pending={x:(e.clientX-r.left)/r.width*100,y:(e.clientY-r.top)/r.height*100};editId=null;openModal()}
+function savePin(){if(!pending&&!editId)return;if(editId){let p=pins.find(x=>x.id===editId);Object.assign(p,{name:name.value.trim()||"Unbenannter Pin",cat:cat.value,note:note.value.trim()})}else{pins.push({id:"p_"+Date.now()+"_"+Math.random().toString(36).slice(2),x:pending.x,y:pending.y,name:name.value.trim()||"Unbenannter Pin",cat:cat.value,note:note.value.trim()})}saveLocal();render();closeModal()}
+function render(){pinsLayer.innerHTML="";for(const p of pins){let el=document.createElement("div");el.className="pin";el.style.left=p.x+"%";el.style.top=p.y+"%";el.innerHTML=`<div class="pinDot" style="background:${colors[p.cat]}"><i></i></div><div class="pinLabel">${esc(p.name)}</div>`;el.onclick=e=>{e.stopPropagation();editId=p.id;openModal()};pinsLayer.appendChild(el)}
+const q=(search.value||"").toLowerCase(), arr=pins.filter(p=>(p.name+" "+p.cat+" "+(p.note||"")).toLowerCase().includes(q));list.innerHTML=arr.length?arr.slice().reverse().map(p=>`<div class="card"><strong>${esc(p.name)}</strong><div class="meta">${esc(p.cat)}</div>${p.note?`<div class="note">${esc(p.note)}</div>`:""}<div class="actions"><button onclick="focusPin('${p.id}')">📍 Anzeigen</button><button onclick="editPin('${p.id}')">✏️</button><button class="danger" onclick="deletePin('${p.id}')">🗑️</button></div></div>`).join(""):'<div style="opacity:.55;text-align:center;padding:35px 15px">Noch keine Pins.<br><br>Karte antippen.</div>'}
+function editPin(id){editId=id;openModal()}function deletePin(id){pins=pins.filter(p=>p.id!==id);saveLocal();render()}function clearAll(){if(confirm("Alle Pins löschen?")){pins=[];saveLocal();render()}}
+function focusPin(id){let p=pins.find(x=>x.id===id);if(!p)return;mapWrap.scrollTo({left:Math.max(0,map.clientWidth*p.x/100-220),top:Math.max(0,map.clientHeight*p.y/100-280),behavior:"smooth"})}
+function togglePanel(){panel.classList.toggle("open")}
+function exportPins(){let b=new Blob([JSON.stringify({pins},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="GTA6-Leonida-Pins.json";a.click()}
+function importPins(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.pins))throw 0;pins=d.pins;saveLocal();render();alert("Pins importiert.")}catch{alert("Ungültige Pin-Datei.")}};r.readAsText(f);e.target.value=""}
+function sharePins(){if(!pins.length){alert("Setze zuerst einen Pin.");return}let t="🎮 GTA VI – Leonida Gruppenpins\\n\\n"+pins.map((p,i)=>`${i+1}. ${p.name} [${p.cat}]${p.note?" – "+p.note:""}`).join("\\n");location.href="whatsapp://send?text="+encodeURIComponent(t)}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function applyZoom(){map.style.transform=`scale(${zoom})`;zoomText.textContent=Math.round(zoom*100)+"%"}function zoomIn(){zoom=Math.min(3,+(zoom+.25).toFixed(2));applyZoom()}function zoomOut(){zoom=Math.max(.75,+(zoom-.25).toFixed(2));applyZoom()}function resetZoom(){zoom=1;applyZoom()}
+let pinchStart=0,pinchZoom=1;mapWrap.addEventListener("touchstart",e=>{if(e.touches.length===2){pinchStart=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);pinchZoom=zoom}},{passive:true});mapWrap.addEventListener("touchmove",e=>{if(e.touches.length===2){e.preventDefault();let d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);zoom=Math.max(.75,Math.min(3,+(pinchZoom*d/pinchStart).toFixed(2)));applyZoom()}},{passive:false});
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});render();
+</script></body></html>
